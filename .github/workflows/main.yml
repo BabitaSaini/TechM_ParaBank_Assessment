@@ -19,6 +19,12 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
     - name: Restore dependencies
       run: dotnet restore
 
@@ -31,12 +37,10 @@ jobs:
 
     - name: Install Allure CLI
       if: always()
-      shell: powershell
       run: |
-        Invoke-WebRequest -Uri https://github.com/allure-framework/allure2/releases/latest/download/allure-2.27.0.zip -OutFile allure.zip
-        Expand-Archive allure.zip -DestinationPath .
-        $allurePath = "$PWD\allure-2.27.0\bin"
-        echo $allurePath | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        curl -o allure.tgz -L https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.24.0/allure-commandline-2.24.0.tgz
+        tar -xvzf allure.tgz
+        echo "${{ github.workspace }}/allure-2.24.0/bin" >> $GITHUB_PATH
 
     - name: Generate Allure Report
       if: always()
